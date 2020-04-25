@@ -9,7 +9,7 @@
       
       character(len=1)   :: at_char="@"
       character(len=1)   :: tb_char=""//achar(9)
-      character(len=22)  :: f_name ="NewGen_netcdfout.param"
+      character(len=35)  :: f_name ="../inputdata/NewGen_netcdfout.param"
       character(len=132) :: file_line
       character(len=:), allocatable  :: char_field
       character(len=7)   :: error_char = ".error."
@@ -33,7 +33,7 @@
       character(len=str_len) :: xml_file_wrk  
       character(len=str_len) :: terugkeer, word_n
       
-      character(len=10)  :: path_XML = "xml_files/"
+      character(len=13)  :: path_XML = "../xml_files/"
       integer :: n_xmlvarfiles = 0
                               
                               
