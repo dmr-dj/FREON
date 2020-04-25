@@ -1,0 +1,61 @@
+<axesdefs>
+<!-- CF-compliant Coordinates, Axes, Dimensions -->
+<!-- Source: http://http://cfconventions.org/cf-conventions/cf-conventions.html#coordinate-types -->
+<!-- Limited by NCIO's abilities to handle attributes, hence: long_name,standard_name,units,axis,calendar,unlimited -->
+  <Coordinate type="genuine">
+		<VarName>tlat</VarName>
+        <Long_Name>latitude on tracer grid</Long_Name>
+        <STD_Name>latitude</STD_Name>
+        <Units>degrees_north</Units>
+        <Axis>Y</Axis>
+        <Axes_List>ptlat ptlon</Axes_List>
+  </Coordinate>
+  <Coordinate type="genuine">
+		<VarName>tlon</VarName>
+        <Long_Name>longitude on tracer grid</Long_Name>
+        <STD_Name>longitude</STD_Name>
+        <Units>degrees_east</Units>
+        <Axis>Y</Axis>
+        <Axes_List>ptlat ptlon</Axes_List>
+  </Coordinate>
+  <Coordinate type="pseudo">
+		<VarName>ptlon</VarName>
+        <Long_Name>pseudo longitude on tracer grid</Long_Name>
+        <STD_Name>longitude</STD_Name>
+        <Units>degrees_east</Units>
+        <Axis>Y</Axis>
+        <Size>120</Size>
+        <CodeBits>
+<![CDATA[
+!-----|--1----+----2----+----3----+----4----+----5----+----6----+----7----+----8----+----9----+----0----+----1----+----2----+----3-|
+      ! Initialization values ...      
+      {Varname} = (/ 28.5, 31.5, 34.5, 37.5, 40.5, 43.5, 46.5, 49.5, 52.5, 55.5, 58.5, 61.5, 64.5, 67.5, 70.5, 73.5, 76.5, 79.5, &
+                     82.5, 85.5, 88.5, 91.5, 94.5, 97.5, 100.5, 103.5, 106.5, 109.5, 112.5, 115.5, 118.5, 121.5, 124.5, 127.5,   &
+                     130.5, 133.5, 136.5, 139.5, 142.5, 145.5, 148.5, 151.5, 154.5, 157.5, 160.5, 163.5, 166.5, 169.5, 172.5,    &
+                     175.5, 178.5, 181.5, 184.5, 187.5, 190.5, 193.5, 196.5, 199.5, 202.5, 205.5, 208.5, 211.5, 214.5, 217.5,    &
+                     220.5, 223.5, 226.5, 229.5, 232.5, 235.5, 238.5, 241.5, 244.5, 247.5, 250.5, 253.5, 256.5, 259.5, 262.5,    &
+                     265.5, 268.5, 271.5, 274.5, 277.5, 280.5, 283.5, 286.5, 289.5, 292.5, 295.5, 298.5, 301.5, 304.5, 307.5,    &
+                     310.5, 313.5, 316.5, 319.5, 322.5, 325.5, 328.5, 331.5, 334.5, 337.5, 340.5, 343.5, 346.5, 349.5, 352.5,    &
+                     355.5, 358.5, 361.5, 364.5, 367.5, 370.5, 373.5, 376.5, 379.5, 382.5, 385.5 /)
+]]>        
+        </CodeBits>
+  </Coordinate>
+  <Coordinate type="pseudo">
+		<VarName>ptlat</VarName>
+        <Long_Name>pseudo latitude on tracer grid</Long_Name>
+        <STD_Name>latitude</STD_Name>
+        <Units>degrees_north</Units>
+        <Axis>X</Axis>
+        <Size>65</Size>
+        <CodeBits>
+<![CDATA[
+!-----|--1----+----2----+----3----+----4----+----5----+----6----+----7----+----8----+----9----+----0----+----1----+----2----+----3-|
+      ! Initialization values ...      
+      {Varname} = (/ -79.5, -76.5, -73.5, -70.5, -67.5, -64.5, -61.5, -58.5, -55.5, -52.5, -49.5, -46.5, -43.5, -40.5, -37.5,    &
+                     -34.5, -31.5, -28.5, -25.5, -22.5, -19.5, -16.5, -13.5, -10.5, -7.5, -4.5, -1.5, 1.5, 4.5, 7.5, 10.5, 13.5, &
+                      16.5, 19.5, 22.5, 25.5, 28.5, 31.5, 34.5, 37.5, 40.5, 43.5, 46.5, 49.5, 52.5, 55.5, 58.5, 61.5, 64.5, 67.5,&
+                      70.5, 73.5, 76.5, 79.5, 82.5, 85.5, 88.5, 91.5, 94.5, 97.5, 100.5, 103.5, 106.5, 109.5, 112.5 /)
+]]>        
+        </CodeBits>
+  </Coordinate>  
+</axesdefs>

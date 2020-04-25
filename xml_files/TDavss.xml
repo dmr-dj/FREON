@@ -1,0 +1,15 @@
+<singlevardef>
+<!-- CF-compliant Coordinates, Axes, Dimensions -->
+<!-- Source: http://http://cfconventions.org/cf-conventions/cf-conventions.html#coordinate-types -->
+<!-- Limited by NCIO's abilities to handle attributes, hence: long_name,standard_name,units,axis,calendar,unlimited -->
+  <Variable type="double">
+		<VarName>TDavss</VarName>
+        <VarSource>avs_tide</VarSource>
+        <MODSource>engtur_mod</MODSource>
+        <Long_Name> To be written </Long_Name>
+        <STD_Name>TBD</STD_Name>
+        <Units>no_idea</Units>
+        <Axes_List>time tdepth ptlat ptlon</Axes_List>
+        <Calendar>360_day</Calendar>
+  </Variable>
+</singlevardef>

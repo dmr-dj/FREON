@@ -1,0 +1,130 @@
+<gbdefs>
+<!-- CF-compliant global attributes are, in addition to conventions: title, history, institution, source, references, and comment -->
+<!-- Source: http://cfconventions.org/Data/cf-conventions/cf-conventions-1.8/cf-conventions.html#_attributes -->
+<!--   Title   -->
+  <Attribute Varname="mon_title"
+             Value="Monthly output for the ocean module, CLIO, v3.0"
+             Type="c"
+             Descr="title"
+             Key="mon" />
+  <Attribute Varname="ann_title"
+             Value="Annual output for the ocean module, CLIO, v3.0"
+             Type="c"
+             Descr="title"
+             Key="ann" />
+<!--   History   -->
+  <Attribute Varname="history_NC"
+             Value="Created by out_CLIO_mod v0.1"
+             Type="c"
+             Descr="history" />
+<!--   Institution   -->
+  <Attribute Varname="institution_LSCE"
+             Value="Laboratoire de Sciences du Climat et de l'Environnement, UMR8212"
+             Type="c"
+             Descr="institution" />
+  <Attribute Varname="institution_VUA"
+             Value="Vrije Universiteit Amsterdam, The Netherlands"
+             Type="c"
+             Descr="institution" />
+<!--   Source   -->
+  <Attribute Varname="source_mod"
+             Value="THE_EXACT_VERSION_OF_THE_iLOVECLIM_MODEL"
+             Type="c"
+             Descr="source" />
+<!--   References   -->
+  <Attribute Varname="references_NC"
+             Value="https://www.geosci-model-dev.net/special_issue30.html"
+             Type="c"
+             Descr="references" />
+<!--   Comment   -->
+  <Attribute Varname="comment_NC"
+             Value=""
+             Type="c"
+             Descr="comment" />
+<!--   Conventions   -->
+  <Attribute Varname="conventions"
+             Value="CF-1.8"
+             Type="c"
+             Descr="conventions" />
+<!--       SECTION FOR *MIP     -->
+<!--   *MIP conventions for global attributes are numerous   -->
+<!-- See: https://docs.google.com/document/d/1h0r8RZr_f3-8egBMMh7aqLwy3snpD6_MrDz1q8n5XUk/edit  -->
+<!--     I am using only a subset here  -->
+<!--     activity_id    -->
+  <Attribute Varname="activity_NC"
+             Value="No-MIP"
+             Type="c"
+             Descr="activity_id" />
+<!--     (I am ignoring the branches definitions and the CF-standard ones)    -->
+<!--     contact  -->
+<!--   NOTE: should be automatically the login name!  -->
+  <Attribute Varname="contact_name"
+             Value="LOGIN_TO_BE_REPLACED_AT_INSTALL"
+             Type="c"
+             Descr="contact" />
+<!--   creation_date  -->
+<!--   NOTE: created void, should be updated during creation of file -->
+  <Attribute Varname="creation_date"
+             Value=""
+             Type="c"
+             Descr="creation_date" />
+<!--   frequency  -->
+  <Attribute Varname="frequency_data_ann"
+             Value="yr"
+             Type="c"
+             Descr="frequency" />
+  <Attribute Varname="frequency_data_mon"
+             Value="mon"
+             Type="c"
+             Descr="frequency" />
+<!--   grid  -->
+  <Attribute Varname="grid_spec"
+             Value="native ocean grid with 122x65 dimensions"
+             Type="c"
+             Descr="grid" />
+<!--   grid_label  -->
+  <Attribute Varname="grid_lbl"
+             Value="gn"
+             Type="c"
+             Descr="grid_label" />
+<!--   institution_id  -->
+  <Attribute Varname="institution_id_LSCE"
+             Value="IPSL"
+             Type="c"
+             Descr="institution_id" />
+  <Attribute Varname="institution_id_VUA"
+             Value="VUA"
+             Type="c"
+             Descr="institution_id" />
+<!--     license   -->
+  <Attribute Varname="licensing_iloveclim"
+             Value="T.B.D."
+             Type="c"
+             Descr="license" />
+<!--     mip_era   -->
+  <Attribute Varname="mip_era_desc"
+             Value="No-MIP8"
+             Type="c"
+             Descr="mip_era" />
+<!--   nominal_resolution -->
+  <Attribute Varname="nom_res"
+             Value="3x3 degree"
+             Type="c"
+             Descr="nominal_resolution" />
+<!--     (I am ignoring the parent definitions and some more here)    -->
+<!--    realm   -->
+  <Attribute Varname="modeling_realm"
+             Value="ocean"
+             Type="c"
+             Descr="realm" />
+<!--  source_type  -->
+  <Attribute Varname="type_model"
+             Value="ESM"
+             Type="c"
+             Descr="source_type" />
+<!--  tracking_id , will be a uuid at running time -->
+  <Attribute Varname="uuid_per_file"
+             Value=""
+             Type="c"
+             Descr="tracking_id" />
+</gbdefs>

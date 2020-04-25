@@ -1,0 +1,9 @@
+<axesdefs>
+<!-- CF-compliant Coordinates, Axes, Dimensions -->
+<!-- Source: http://http://cfconventions.org/cf-conventions/cf-conventions.html#coordinate-types -->
+<!-- Limited by NCIO's abilities to handle attributes, hence: long_name,standard_name,units,axis,calendar,unlimited -->
+   <Coordinate type="alias">
+      <VarName>ptlon</VarName>
+      <RedirFname>axes_defs.xml</RedirFname>
+   </Coordinate>
+</axesdefs>
