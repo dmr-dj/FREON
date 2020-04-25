@@ -1,0 +1,10 @@
+! --- Lines starting with anything but "@" are ignored
+! --- Elements should be separated by actual tabs (no space)
+! --- Any character beyond column 132 will be ignored
+! ---
+! - key	-	varname	monthly	yearly	!rest of the line for description, comments
+@varoutput	TDemix	.F.	.T.	!
+@varoutput	TDtide	.T.	.F.	!
+@varoutput	TDavss	.F.	.T.	!
+! ---
+! The End of All Things (op. cit.)
