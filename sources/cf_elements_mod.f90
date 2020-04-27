@@ -35,6 +35,7 @@
    CHARACTER(LEN=*), PARAMETER :: cp_elttag_codebit = 'CodeBits'
    CHARACTER(LEN=*), PARAMETER :: cp_elttag_varasrc = 'VarSource'
    CHARACTER(LEN=*), PARAMETER :: cp_elttag_modusrc = 'MODSource'
+   CHARACTER(LEN=*), PARAMETER :: cp_elttag_redirfn = 'RedirFname'
    
 ! --- dmr
 ! ---- [NOTA] Predefined CF-compliant attributes
