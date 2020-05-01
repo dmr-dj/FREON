@@ -1,13 +1,16 @@
       program load_vars
       
-      use cf_elements_mod , only: xfs_list, XFSL_createRoot, XFSL_addNode, out_var, nb_char_varname
+      use cf_elements_mod, only: xfs_list, XFSL_createRoot, XFSL_addNode, out_var, nb_char_varname
 
       use stack_outvar, only: stack_var, push, pop, empty
-
-      
+    
       implicit none
+
+
+#define VERBOSE 0
       
       character(len=1)   :: at_char="@"
+      character(len=1)   :: sp_char=" "
       character(len=1)   :: tb_char=""//achar(9)
       character(len=35)  :: f_name ="../inputdata/NewGen_netcdfout.param"
       character(len=132) :: file_line
@@ -16,34 +19,43 @@
       
       integer, parameter :: str_len = 256
       
+      logical :: reussi
+
+! --- dmr ASCII code of character "0"
+      integer, parameter :: zero_char=48
+      
+! --- dmr  Variables for handling file openings      
       logical :: file_exists
       integer :: f_unit
       integer :: stat
+
+! --- dmr        
       integer :: nb_fields, i, indx_char, len_line, field, sub_indx, size_field
+
+! --- dmr Minimum number of fields in the "netCDF param" file opened
       integer, parameter :: min_field=5
-      integer, parameter :: zero_char=48
 
       character(len=10),parameter:: key_varout="@varoutput"
       character(len=7),parameter :: key_unknown="Unknown"
       character(len=12),parameter:: key_coordout="@coordoutput"
       character(len=3) ,parameter:: char_true=".T.", char_false=".F."
       
-      integer, parameter :: data_chunk = 10
-      integer            :: nb_chunk = 1, count_var = 0
-              
+!~       integer, parameter :: data_chunk = 10
+      integer                    :: count_var = 0
+!~       integer            :: nb_chunk = 1, count_var = 0              
               
       character(len=str_len) :: xml_file_wrk  
       character(len=str_len) :: terugkeer, word_n
       
       character(len=13)  :: path_XML = "../xml_files/"
       integer :: n_xmlvarfiles = 0
+      
+      character(len=str_len) :: liste_dependent_var =" "
                               
                               
       type(xfs_list), pointer :: xml_variables, xml_variableswk, xfs_work
                              
                         
-!~       type(out_var), dimension(:), allocatable :: out_var_list
-!~       type(out_var), dimension(:), allocatable :: out_var_storage
       type(out_var)   :: stackelt, new_stackelt
       type(stack_var) :: stackvar
                               
@@ -52,8 +64,6 @@
               
       INQUIRE(FILE=f_name, EXIST=file_exists)
       open(file=f_name, form="formatted", newunit=f_unit)
-
-!~       allocate(out_var_list(data_chunk*nb_chunk))
 
       do
         
@@ -113,12 +123,15 @@
       do 
         stackelt = pop(stackvar)
 
-        write(*,*) " ============= "
-        write(*,*) stackelt%var_type
-        write(*,*) stackelt%var_name
+        write(*,*)
+        write(*,*) " PROCESSING ... "
+        write(*,*) "| ", stackelt%var_name
+#if ( VERBOSE == 1 )
         write(*,*) stackelt%monthly
         write(*,*) stackelt%yearly
-        write(*,*) " PROCESSING ... "
+        write(*,*) stackelt%var_type
+#endif        
+        write(*,*) " ============= "
          
         xml_file_wrk = inquire_after_varfile(stackelt%var_name,path_XML)
                   
@@ -146,16 +159,30 @@
            !treatment of the variables, namely add them to the stack
            do
               word_n = pop_word(terugkeer)
+#if ( VERBOSE == 1 )              
               write(*,*) "Word ==", trim(word_n)
-              if ( word_n == "time" ) then
+#endif              
+              if ( word_n == "time" .and. (not (has(liste_dependent_var,trim(word_n)))) ) then
+                 reussi = add(liste_dependent_var,trim(word_n))
                  cycle
               else
                  xml_file_wrk = inquire_after_varfile(word_n,path_XML)
                  
-                 ! create an element for the stack and push it to the stack
-                 ! [NOTA] Known drawback, will call inquire_after_varfile a second time. Costless anyhow.
-                 new_stackelt%var_name = trim(word_n)
-                 call push(stackvar,new_stackelt)
+                 if ( not (has(liste_dependent_var,trim(word_n))) ) then
+                      ! good dependency, not taken into account yet
+                      ! create an element for the stack and push it to the stack
+                      ! [NOTA] Known drawback, will call inquire_after_varfile a second time. Costless anyhow.
+                      new_stackelt%var_name = trim(word_n)
+                      
+                      call push(stackvar,new_stackelt)
+                      reussi = add(liste_dependent_var,trim(word_n))
+#if ( VERBOSE == 1 )                      
+                      write(*,*) "liste dependencies == ", trim(liste_dependent_var)
+#endif                      
+                  else
+                      ! do nothing, already there, ignored                      
+                      write(*,*) "Requested dependency: ", word_n, "already met"
+                  endif
               endif
               if ( len_trim(terugkeer).gt.0 ) then
                 cycle
@@ -215,7 +242,7 @@
         use cf_elements_mod, only: varia_element, coord_element
         use cf_elements_mod, only: cp_elttag_varname, cp_elttag_axeslst, cp_elttag_fixsize
         use cf_elements_mod, only: xfs_list
-        use cf_elements_mod, only: attr_coordelt, attr_eltgenui, attr_eltpsdo, attr_eltalia
+        use cf_elements_mod, only: attr_coordelt, attr_eltgenui, attr_eltpsdo ! [DEPRECATED] , attr_eltalia
         use cf_elements_mod, only: cp_elttag_redirfn
         
         character(len=*), intent(in)    :: nameXML_file
@@ -267,8 +294,10 @@
 
             !--- Premier parsing de la liste xml fournie 
             xml_base_event_p => XMLSTRUCT(lokaal_XMLf, n_maxlen_eltname, n_maxlen_attname, n_maxlen_attcont)
-        
+            
+#if ( VERBOSE == 1 )           
             write(*,*) "MaxS read: (  I) ", n_maxlen_eltname, n_maxlen_attname, n_maxlen_attcont
+#endif            
 
            ! [GUY DIXIT] :
            ! Could check here if maxlen's do not exceed currently adopted parameterizations
@@ -284,7 +313,9 @@
            
            n_elements = SIZE(list_elements)
            
+#if ( VERBOSE == 1 )
            write(*,*) "I have ===", n_elements, " elements"
+#endif           
            
            if ( n_elements.eq.1 ) then ! for now I assume each variable has its own file
               element_XMLnode => list_elements(1)%ptr
@@ -293,6 +324,7 @@
 
               ! [TODO] CODE to find which element is the one matching node_sngl_var%var_name
               write(*,*) "node_sngl_var%var_name == ", trim(node_sngl_var%var_name)
+              write(*,*) "[ERROR, WAIT]"
               read(*,*)
            else
            
@@ -314,6 +346,9 @@
               if ( string_wrk /= "" ) then
                 nb_words = count_words(string_wrk)
                 write(*,*) "NB dependencies = ", nb_words, string_wrk
+              else
+                nb_words = 0
+                write(*,*) "NO dependencies for given variable "
               endif
 
               xml_var_wrk%dep_sze = nb_words
@@ -342,9 +377,10 @@
 
             ! --- Premier parsing de la liste xml fournie 
             xml_base_event_p => XMLSTRUCT(lokaal_XMLf, n_maxlen_eltname, n_maxlen_attname, n_maxlen_attcont)
-        
-            write(*,*) "MaxS read: (  I) ", n_maxlen_eltname, n_maxlen_attname, n_maxlen_attcont
             
+#if ( VERBOSE == 1 )        
+            write(*,*) "MaxS read: (  I) ", n_maxlen_eltname, n_maxlen_attname, n_maxlen_attcont
+#endif            
             ! [GUY DIXIT] :
             ! Could check here if maxlen's do not exceed currently adopted parameterizations
             xml_base_stack_p => XMLLOAD(lokaal_XMLf, xml_base_event_p, n_maxdepth)
@@ -357,15 +393,18 @@
             list_elements => STKMX_getElementNodeByName(xml_base_stack_p, name_element)
            
             n_elements = SIZE(list_elements)
-            
+#if ( VERBOSE == 1 )             
             write(*,*) "Looking for element, ", coord_element, " , found : ", n_elements
+#endif            
             if ( n_elements.eq.1 ) then ! found one element of coordinate type
                ! --- check the coordinate type ...
                element_XMLnode => list_elements(1)%ptr
                i_att = STKMX_getAttIdxByName(element_XMLnode, attr_coordelt)
                stkrc_attcntt => STKMX_getAttcnttByIdx(element_XMLnode, i_att)               
                CALL STKRC_copyStkrcToStr(stkrc_attcntt, c_attcntt, nlen_returned)
+#if ( VERBOSE == 1 )                
                write(*,*) "That element has a type of ==", trim(c_attcntt)
+#endif               
                
                ! --- For now, three cases arise, two with similar treatment 
                elt_coord: select case (trim(c_attcntt))
@@ -378,30 +417,12 @@
                    nullify(element_XMLnode)
                    nullify(stkrc_attcntt)
                    cycle
-                 case (attr_eltalia) ! alias coordinate => cycle with new filename ...
-                   node_sngl_var%var_type = key_coordout
-                   ! --- retrieve file where to find the element
-                   wrk_char_var = trim(path_XML)//trim(get_tagged_element(element_XMLnode,cp_elttag_redirfn))                   
-                   ! --- set as new working filename
-                   if (allocated(lokaal_XMLf)) then
-                     deallocate(lokaal_XMLf)
-                   endif   
-                   allocate(character(len=len_trim(wrk_char_var)) :: lokaal_XMLf)        
-                   lokaal_XMLf=trim(wrk_char_var)
-                   wrk_char_var = ""
-                   ! --- garbage handling
-                   nullify(xml_base_event_p)
-                   nullify(xml_base_stack_p)
-                   nullify(list_elements)
-                   nullify(element_XMLnode)
-                   nullify(stkrc_attcntt)
-                   ! --- restart with new file ...
-                   cycle                    
+                 case default
+                   ! Dunno what to do there!
+                   write(*,*) " [ERROR, PASS] unkown element type for var = "//trim(node_sngl_var%var_type)
+                   to_return = error_char
                end select elt_coord
                
-               
-            READ(*,*)
-
             else
            
               write(*,*) " [ERROR, PASS] unkown var element, not matched in XML = "//trim(node_sngl_var%var_type)
@@ -419,61 +440,7 @@
         end select var_type
         
         enddo
-
-
-!~         if ( trim(node_sngl_var%var_type) .eq. key_varout ) then ! found a variable of type @varout
-          
-!~            name_element = varia_element ! looking for elements describing variable types          
-!~            list_elements => STKMX_getElementNodeByName(xml_base_stack_p, name_element)
-           
-!~            n_elements = SIZE(list_elements)
-           
-!~            if ( n_elements.eq.1 ) then ! for now I assume each variable has its own file
-!~               element_XMLnode => list_elements(1)%ptr
               
-!~               ! Now need to retrieve the base elements to populate a CF_ELEMENTS_MOD, XFS_list element
-
-!~               ! Start with the variable name ...
-!~               xml_var_wrk%var_name = get_tagged_element(element_XMLnode,cp_elttag_varname)
-              
-!~               ! then with the dependencies in axes ...
-!~               xml_var_wrk%dep_list = get_tagged_element(element_XMLnode,cp_elttag_axeslst)
-              
-!~               allocate(character(len=len_trim(xml_var_wrk%dep_list)) :: string_wrk)
-!~               string_wrk = trim(xml_var_wrk%dep_list)
-!~               if ( string_wrk /= "" ) then
-!~                 nb_words = count_words(string_wrk)
-!~                 write(*,*) "NB dependencies = ", nb_words, string_wrk
-!~               endif
-
-!~               xml_var_wrk%dep_sze = nb_words
-!~               to_return = ""//string_wrk
-!~               deallocate(string_wrk)
-
-!~               ! then check is a size element exists (case of a pseudo-axis only for now)
-!~               allocate(character(len=str_len) :: string_wrk)
-!~               string_wrk = get_tagged_element(element_XMLnode,cp_elttag_fixsize)
-!~               if ( len_trim(string_wrk) == 0 ) then ! no assumed size of the element
-!~                  xml_var_wrk%s_ize = -1
-!~               else
-!~                  read(string_wrk,'(I)') xml_var_wrk%s_ize
-!~               endif
-!~               deallocate(string_wrk)
-
-!~               ! Finally associate the rest of the elements to the pointer, for future use
-!~               xml_var_wrk%xml_datastack => element_XMLnode
-
-!~            else
-           
-!~              write(*,*) " [ERROR, PASS] unkown var element, not matched in XML = "//trim(node_sngl_var%var_type)
-!~              to_return = error_char
-           
-!~            endif
-!~         else
-!~            write(*,*) " [ERROR, PASS] unkown element type for var = "//trim(node_sngl_var%var_type)
-!~            to_return = error_char
-!~         endif
-                
       end function XMLLOAD_oneFILE
 
       function get_tagged_element(elt_XMLnode,cp_elttag) result(string_elt)
@@ -494,13 +461,17 @@
         
         NULLIFY(stkmx_work)
         stkmx_work=>STKMX_getUniqueChildEltByName(elt_XMLnode,cp_elttag)
+#if ( VERBOSE == 1 )         
         write(*,*) "cp_elttag ::", cp_elttag
+#endif        
         if (ASSOCIATED(stkmx_work)) then
            stkrcp_work => STKMX_getPCDatacntt(stkmx_work)
            CALL STKRC_copyStkrcToStr(stkrcp_work(1)%ptr, c_attcntt)
            string_elt = c_attcntt
         else
-           write(*,*) "Elt does not exist in XML file"
+#if ( VERBOSE == 1 )                 
+           write(*,*) "Elt, "//cp_elttag//" does not exist in XML file"
+#endif           
            string_elt = ""
         endif      
          
@@ -555,7 +526,44 @@
         
         return
       end function pop_word
+      
+      function HAS(A,B) result(yes)	!Text B appears somewhere in text A?
+       CHARACTER*(*) A,B
+       INTEGER L
+       logical :: yes
+        L = INDEX(A,B)		!The first position in A where B matches.
+        IF (L.LE.0) THEN
+          yes=.false.
+         ELSE
+          yes=.true.
+        END IF
+      END function HAS
 
+      function ADD(a,b) result(done) ! Add string b into string a if necessary space exists
 
+       CHARACTER(*), intent(inout) :: a
+       CHARACTER(*), intent(in)    :: b
+       INTEGER      ::  L,L_a, L_b
+       character(len=:), allocatable :: c
+       
+       logical :: done
+       
+
+        L = len(a)
+        L_a = len_trim(a)
+        L_b = len_trim(b)
+               
+        if ( (L_a+L_b) .gt. L) then
+           done = .false. ! no space to add string b in a
+        else
+           allocate(character(len=L_a+L_b+1) :: c)
+           write(c,'(A)') trim(a)
+           a = ""
+           write(a,'(A)') ""//trim(c)//sp_char//trim(b)
+           deallocate(c)
+           done = .true.
+        endif
+
+      end function ADD
 
       end program load_vars

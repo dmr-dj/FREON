@@ -21,7 +21,7 @@
    CHARACTER(LEN=*), PARAMETER :: attr_coordelt  = "type"
    CHARACTER(LEN=*), PARAMETER :: attr_eltgenui  = "genuine"
    CHARACTER(LEN=*), PARAMETER :: attr_eltpsdo   = "pseudo"
-   CHARACTER(LEN=*), PARAMETER :: attr_eltalia   = "alias"
+!~    CHARACTER(LEN=*), PARAMETER :: attr_eltalia   = "alias"
 
    
    CHARACTER(LEN=*), PARAMETER :: varia_element  = "Variable"
