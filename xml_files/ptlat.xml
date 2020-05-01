@@ -2,8 +2,22 @@
 <!-- CF-compliant Coordinates, Axes, Dimensions -->
 <!-- Source: http://http://cfconventions.org/cf-conventions/cf-conventions.html#coordinate-types -->
 <!-- Limited by NCIO's abilities to handle attributes, hence: long_name,standard_name,units,axis,calendar,unlimited -->
-   <Coordinate type="alias">
-      <VarName>ptlat</VarName>
-      <RedirFname>axes_defs.xml</RedirFname>
-   </Coordinate>
+  <Coordinate type="pseudo">
+		<VarName>ptlat</VarName>
+        <Long_Name>pseudo latitude on tracer grid</Long_Name>
+        <STD_Name>latitude</STD_Name>
+        <Units>degrees_north</Units>
+        <Axis>X</Axis>
+        <Size>65</Size>
+        <CodeBits>
+<![CDATA[
+!-----|--1----+----2----+----3----+----4----+----5----+----6----+----7----+----8----+----9----+----0----+----1----+----2----+----3-|
+      ! Initialization values ...      
+      {Varname} = (/ -79.5, -76.5, -73.5, -70.5, -67.5, -64.5, -61.5, -58.5, -55.5, -52.5, -49.5, -46.5, -43.5, -40.5, -37.5,    &
+                     -34.5, -31.5, -28.5, -25.5, -22.5, -19.5, -16.5, -13.5, -10.5, -7.5, -4.5, -1.5, 1.5, 4.5, 7.5, 10.5, 13.5, &
+                      16.5, 19.5, 22.5, 25.5, 28.5, 31.5, 34.5, 37.5, 40.5, 43.5, 46.5, 49.5, 52.5, 55.5, 58.5, 61.5, 64.5, 67.5,&
+                      70.5, 73.5, 76.5, 79.5, 82.5, 85.5, 88.5, 91.5, 94.5, 97.5, 100.5, 103.5, 106.5, 109.5, 112.5 /)
+]]>        
+        </CodeBits>
+  </Coordinate>  
 </axesdefs>

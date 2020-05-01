@@ -2,8 +2,20 @@
 <!-- CF-compliant Coordinates, Axes, Dimensions -->
 <!-- Source: http://http://cfconventions.org/cf-conventions/cf-conventions.html#coordinate-types -->
 <!-- Limited by NCIO's abilities to handle attributes, hence: long_name,standard_name,units,axis,calendar,unlimited -->
-   <Coordinate type="alias">
-      <VarName>tdepth</VarName>
-      <RedirFname>axes_defs.xml</RedirFname>
-   </Coordinate>
+  <Coordinate type="genuine">
+		<VarName>tdepth</VarName>
+        <Long_Name>depth of tracer points</Long_Name>
+        <STD_Name>depth</STD_Name>
+        <Units>meters</Units>
+        <Axis>Z</Axis>
+        <Size>20</Size>
+        <CodeBits>
+<![CDATA[
+!-----|--1----+----2----+----3----+----4----+----5----+----6----+----7----+----8----+----9----+----0----+----1----+----2----+----3-|
+      ! Initialization values ...      
+      {Varname} = (/ -5126.18, -4385.22, -3661.11, -2963.25, -2307.36, -1717.9, -1225.11, -850.19, -588.88, -415.07, -299.29, &
+                     -219.86, -163.28, -121.52, -89.75, -64.96, -45.2, -29.17, -15.98, -5 /)
+]]>        
+        </CodeBits>
+  </Coordinate>  
 </axesdefs>
