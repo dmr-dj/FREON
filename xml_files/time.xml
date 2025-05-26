@@ -1,0 +1,14 @@
+<axesdefs>
+<!-- CF-compliant Coordinates, Axes, Dimensions -->
+<!-- Source: http://http://cfconventions.org/cf-conventions/cf-conventions.html#coordinate-types -->
+<!-- Limited by NCIO's abilities to handle attributes, hence: long_name,standard_name,units,axis,calendar,unlimited -->
+  <Coordinate type="pseudo">
+		<VarName>time</VarName>
+        <Long_Name>time @ THE_PERIOD_OF_TIME ka B.P.</Long_Name>
+        <STD_Name>time</STD_Name>
+        <Units>days since 1601-1-1 0:0:0</Units>
+        <Axis>T</Axis>
+        <Size></Size>
+        <Calendar>360_days</Calendar>
+  </Coordinate>
+</axesdefs>

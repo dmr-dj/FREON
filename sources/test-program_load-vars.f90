@@ -60,8 +60,13 @@
       type(stack_var) :: stackvar
                               
       ! start main code ...                               
-                                            
-              
+                                                          
+!-----|--1----+----2----+----3----+----4----+----5----+----6----+----7----+----8----+----9----+----0----+----1----+----2----+----3-|
+! dmr   The section below could be moved in a coherent subroutine
+!         IN : a filename
+!         OUT: a stack_var with the variables main information elements
+!-----|--1----+----2----+----3----+----4----+----5----+----6----+----7----+----8----+----9----+----0----+----1----+----2----+----3-|
+                                                          
       INQUIRE(FILE=f_name, EXIST=file_exists)
       open(file=f_name, form="formatted", newunit=f_unit)
 
@@ -87,22 +92,26 @@
         len_line=len_trim(file_line)
         
         do field=1,min_field-1 ! last field is a comment, so skip
-        
+           
+           ! Find where the "tab" character is and read whatever is before
            sub_indx = index(file_line(indx_char:len_line),tb_char)
            size_field=sub_indx-1
            allocate(character(len=size_field) :: char_field)
            read(file_line(indx_char:indx_char+size_field),*)  char_field
            
+           ! key to specify an output variable
            if ((trim(char_field).eq.key_varout).and.(field.eq.1)) then
                stackelt%var_type = key_varout
+           ! name of the variable               
            else if ((len_trim(char_field).le.nb_char_varname).and.(field.eq.2)) then
-              stackelt%var_name = trim(char_field)
+               stackelt%var_name = trim(char_field)
+           ! type of output requested               
            else if ((trim(char_field).eq.char_true).or.(trim(char_field).eq.char_false)) then
               if (trim(char_field).eq.char_true) then
                 if (field.eq.3) then
                    stackelt%monthly = .true.
                 else
-                  stackelt%yearly = .true.
+                   stackelt%yearly = .true.
                 endif
               else
                 if (field.eq.3) then
@@ -117,9 +126,16 @@
 
         end do ! finished line parsing
         
-        call push(stackvar,stackelt)
+        call push(stackvar,stackelt) ! add the given variable to the stack
       end do ! cycle, next buffer line ...
 
+      close(f_unit)
+
+!-----|--1----+----2----+----3----+----4----+----5----+----6----+----7----+----8----+----9----+----0----+----1----+----2----+----3-|
+! dmr   The section before could be moved in a coherent subroutine
+!-----|--1----+----2----+----3----+----4----+----5----+----6----+----7----+----8----+----9----+----0----+----1----+----2----+----3-|
+
+     ! Finished reading the input file. Now process the variables on stack
       do 
         stackelt = pop(stackvar)
 
@@ -147,7 +163,10 @@
           xfs_work => xml_variableswk
           xml_variableswk => XFSL_addNode(xfs_work)
         ENDIF
-         
+
+#if ( VERBOSE == 1 )              
+              write(*,*) "Trying to load ==", trim(xml_file_wrk)
+#endif            
         terugkeer = XMLLOAD_oneFILE(trim(xml_file_wrk),stackelt,xml_variableswk)
         
         if ( trim(terugkeer).ne.error_char ) then 
@@ -162,13 +181,13 @@
 #if ( VERBOSE == 1 )              
               write(*,*) "Word ==", trim(word_n)
 #endif              
-              if ( word_n == "time" .and. (not (has(liste_dependent_var,trim(word_n)))) ) then
+              if ( word_n == "time" .and. (.not.(has(liste_dependent_var,trim(word_n)))) ) then
                  reussi = add(liste_dependent_var,trim(word_n))
                  cycle
               else
                  xml_file_wrk = inquire_after_varfile(word_n,path_XML)
                  
-                 if ( not (has(liste_dependent_var,trim(word_n))) ) then
+                 if (.not.(has(liste_dependent_var,trim(word_n))) ) then
                       ! good dependency, not taken into account yet
                       ! create an element for the stack and push it to the stack
                       ! [NOTA] Known drawback, will call inquire_after_varfile a second time. Costless anyhow.
@@ -177,7 +196,7 @@
                       call push(stackvar,new_stackelt)
                       reussi = add(liste_dependent_var,trim(word_n))
 #if ( VERBOSE == 1 )                      
-                      write(*,*) "liste dependencies == ", trim(liste_dependent_var)
+                      write(*,*) "list dependencies == ", trim(liste_dependent_var)
 #endif                      
                   else
                       ! do nothing, already there, ignored                      
@@ -282,7 +301,7 @@
         allocate(character(len=len_trim(node_sngl_var%var_type)) :: var_typic)
         var_typic=trim(node_sngl_var%var_type)
         
-        write(*,*) "Working with filename ==", lokaal_XMLf
+!~         write(*,*) "Working with filename ==", lokaal_XMLf
         
         var_type: select case (var_typic) 
         
@@ -361,7 +380,7 @@
               if ( len_trim(string_wrk) == 0 ) then ! no assumed size of the element
                  xml_var_wrk%s_ize = -1
               else
-                 read(string_wrk,'(I)') xml_var_wrk%s_ize
+                 read(string_wrk,'(I256)') xml_var_wrk%s_ize
               endif
               deallocate(string_wrk)
 
