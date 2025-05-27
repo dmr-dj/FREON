@@ -13,40 +13,10 @@
 
 #define VERBOSE 0
       
-!~       character(len=1)   :: at_char="@"
-!~       character(len=1)   :: sp_char=" "
-!~       character(len=1)   :: tb_char=""//achar(9)
+
       character(len=35)  :: f_name ="inputdata/NewGen_netcdfout.param"
-!~       character(len=extd_line) :: file_line
-!~       character(len=:), allocatable  :: char_field
-!~       character(len=7)   :: error_char = ".error."
-      
-!~       integer, parameter :: str_len = 256
-      
+
       logical :: reussi
-
-!~ ! --- dmr ASCII code of character "0"
-!~       integer, parameter :: zero_char=48
-      
-! --- dmr  Variables for handling file openings      
-!~       logical :: file_exists
-!~       integer :: f_unit
-!~       integer :: stat
-
-! --- dmr        
-!~       integer :: nb_fields, i, indx_char, len_line, field, sub_indx, size_field
-!~       integer :: i
-! --- dmr Minimum number of fields in the "netCDF param" file opened
-!~       integer, parameter :: min_field=5
-
-!~       character(len=10),parameter:: key_varout="@varoutput"
-!~       character(len=7),parameter :: key_unknown="Unknown"
-!~       character(len=12),parameter:: key_coordout="@coordoutput"
-!~       character(len=3) ,parameter:: char_true=".T.", char_false=".F."
-      
-!~       integer, parameter :: data_chunk = 10
-!~       integer                    :: count_var = 0
-!~       integer            :: nb_chunk = 1, count_var = 0              
               
       character(len=str_len) :: xml_file_wrk  
       character(len=str_len) :: terugkeer, word_n
@@ -65,6 +35,7 @@
                               
                               
       logical :: youpi                              
+
       ! start main code ...                               
                                                           
       youpi = read_param_file_to_stack(f_name, stackvar)
