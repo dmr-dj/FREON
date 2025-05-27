@@ -46,11 +46,11 @@ module process_xml_files
       logical :: file_exists
       integer :: f_unit, stat, count_var=0, min_field=5
       character(len=extd_line) :: file_line
-      integer :: nb_fields, i, indx_char, len_line, field, sub_indx, size_field
+      integer :: nb_fields, i=0, indx_char, len_line, field, sub_indx, size_field
       
       character(len=:), allocatable  :: char_field
 
-      type(out_var)   :: stackelt, new_stackelt
+      type(out_var)   :: stackelt
 
 
       if (PRESENT(mini_field) ) then
@@ -128,6 +128,8 @@ module process_xml_files
 
       close(f_unit)
 
+
+      success=.true.
 !-----|--1----+----2----+----3----+----4----+----5----+----6----+----7----+----8----+----9----+----0----+----1----+----2----+----3-|
 ! dmr   The section before could be moved in a coherent subroutine
 !-----|--1----+----2----+----3----+----4----+----5----+----6----+----7----+----8----+----9----+----0----+----1----+----2----+----3-|

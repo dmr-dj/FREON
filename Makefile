@@ -110,4 +110,5 @@ endif
 	@touch $@
 
 ## automatically generate the dependency rules
-$(eval $(subst $( ),$(\n),$(shell $(AWK) --traditional -f makedepf08.awk $(SOURCES) | sort | uniq | $(SED) -e 's!^.mod/!$(MODDIRSLSH)!' -e 's!:.mod/!:$(MODDIRSLSH)!')))
+##  $(eval $(subst $( ),$(\n),$(shell $(AWK) --traditional -f makedepf08.awk $(SOURCES) | sort | uniq | $(SED) -e 's!^.mod/!$(MODDIRSLSH)!' -e 's!:.mod/!:$(MODDIRSLSH)!')))
+$(eval $(subst $( ),$(\n),$(shell $(AWK) -f makedepf08.awk $(SOURCES) | sort | uniq | $(SED) -e 's!^.mod/!$(MODDIRSLSH)!' -e 's!:.mod/!:$(MODDIRSLSH)!')))

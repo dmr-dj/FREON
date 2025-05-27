@@ -40,4 +40,98 @@ module characters_strings_more
   character(len=3) ,parameter   :: char_true=".T."
   character(len=3) ,parameter   :: char_false=".F."
   
+  
+  contains
+  
+  
+  function count_words(string_in) result(nb_word)
+      
+    character(len=*), intent(in) :: string_in
+    integer                      :: nb_word
+        
+    character(len=1), parameter  :: blank = " "
+    integer                      :: i=0
+         
+    nb_word = COUNT([(string_in(i:i),i=1,len_trim(string_in))].eq.blank)+1
+        
+    return
+  end function count_words
+      
+  function pop_word(string_inout) result(word_out)
+        
+    character(len=str_len), intent(inout) :: string_inout
+    character(len=1), parameter           :: blank = " "
+    character(len=str_len)                :: word_out
+    character(len=str_len)                :: chataract
+        
+    integer                         :: size_string
+    integer                         :: i
+         
+    chataract = trim(adjustl(string_inout))
+    size_string = len_trim(chataract)
+
+    i = 1
+
+    do          
+      if (chataract(i:i).ne.blank) then
+        i = i + 1
+        cycle
+      else
+        if (len_trim(chataract(1:i)).ne.1) then
+          word_out = chataract(1:i-1)
+          if (i.ge.size_string) then
+            string_inout = ""
+          else
+            string_inout = chataract(i:size_string)
+          endif
+          exit
+        else
+          cycle
+        endif
+      endif
+    enddo
+        
+    return
+  end function pop_word
+      
+  function HAS(A,B) result(yes) !Text B appears somewhere in text A?
+    CHARACTER*(*) A,B
+    INTEGER L
+    logical :: yes
+    
+    L = INDEX(A,B)              !The first position in A where B matches.
+    IF (L.LE.0) THEN
+      yes=.false.
+    ELSE
+      yes=.true.
+    END IF
+  END function HAS
+
+  function ADD(a,b) result(done) ! Add string b into string a if necessary space exists
+
+    CHARACTER(*), intent(inout) :: a
+    CHARACTER(*), intent(in)    :: b
+    INTEGER      ::  L,L_a, L_b
+    character(len=:), allocatable :: c
+       
+    logical :: done
+       
+
+    L = len(a)
+    L_a = len_trim(a)
+    L_b = len_trim(b)
+               
+    if ( (L_a+L_b) .gt. L) then
+      done = .false. ! no space to add string b in a
+    else
+      allocate(character(len=L_a+L_b+1) :: c)
+      write(c,'(A)') trim(a)
+      a = ""
+      write(a,'(A)') ""//trim(c)//sp_char//trim(b)
+      deallocate(c)
+      done = .true.
+    endif
+
+  end function ADD
+
 end module characters_strings_more

@@ -1,23 +1,24 @@
       program load_vars
       
-      use cf_elements_mod, only: xfs_list, XFSL_createRoot, XFSL_addNode, out_var, nb_char_varname
+      use cf_elements_mod, only: xfs_list, XFSL_createRoot, XFSL_addNode, out_var ! UNUSED, nb_char_varname
 
       use stack_outvar, only: stack_var, push, pop, empty
-      use characters_strings_more, only: at_char, tb_char, sp_char, error_char, extd_line, str_len &
-          , key_varout, key_unknown, key_coordout, char_true, char_false
+      use characters_strings_more, only:  error_char, str_len &
+          , key_varout, key_unknown, key_coordout ! UNUSED at_char,  char_false, char_true, extd_line,sp_char,tb_char,  
+      use characters_strings_more, only: add, has, pop_word, count_words
           
       use process_xml_files, only: read_param_file_to_stack          
       implicit none
 
 
-#define VERBOSE 1
+#define VERBOSE 0
       
 !~       character(len=1)   :: at_char="@"
 !~       character(len=1)   :: sp_char=" "
 !~       character(len=1)   :: tb_char=""//achar(9)
       character(len=35)  :: f_name ="inputdata/NewGen_netcdfout.param"
-      character(len=extd_line) :: file_line
-      character(len=:), allocatable  :: char_field
+!~       character(len=extd_line) :: file_line
+!~       character(len=:), allocatable  :: char_field
 !~       character(len=7)   :: error_char = ".error."
       
 !~       integer, parameter :: str_len = 256
@@ -28,15 +29,15 @@
 !~       integer, parameter :: zero_char=48
       
 ! --- dmr  Variables for handling file openings      
-      logical :: file_exists
-      integer :: f_unit
-      integer :: stat
+!~       logical :: file_exists
+!~       integer :: f_unit
+!~       integer :: stat
 
 ! --- dmr        
 !~       integer :: nb_fields, i, indx_char, len_line, field, sub_indx, size_field
-      integer :: i
+!~       integer :: i
 ! --- dmr Minimum number of fields in the "netCDF param" file opened
-      integer, parameter :: min_field=5
+!~       integer, parameter :: min_field=5
 
 !~       character(len=10),parameter:: key_varout="@varoutput"
 !~       character(len=7),parameter :: key_unknown="Unknown"
@@ -195,13 +196,13 @@
         use cf_elements_mod, only: cp_elttag_varname, cp_elttag_axeslst, cp_elttag_fixsize
         use cf_elements_mod, only: xfs_list
         use cf_elements_mod, only: attr_coordelt, attr_eltgenui, attr_eltpsdo ! [DEPRECATED] , attr_eltalia
-        use cf_elements_mod, only: cp_elttag_redirfn
+!~         use cf_elements_mod, only: cp_elttag_redirfn
         
         character(len=*), intent(in)    :: nameXML_file
         type(out_var),    intent(inout) :: node_sngl_var
         type(xfs_list), pointer, intent(inout) :: xml_var_wrk        
         
-        logical :: outcome
+!~         logical :: outcome
         character(len=str_len) :: to_return
                 
         TYPE(stack_xmlevents), POINTER           :: xml_base_event_p
@@ -215,7 +216,7 @@
         integer :: i_att 
         
         character(len=str_len)         :: name_element
-        character(len=str_len)         :: c_attcntt, wrk_char_var
+        character(len=str_len)         :: c_attcntt ! , wrk_char_var
         character(len=:), allocatable  :: string_wrk, var_typic,lokaal_XMLf
         
         to_return = ""
@@ -428,94 +429,5 @@
         endif      
          
       end function get_tagged_element
-
-      function count_words(string_in) result(nb_word)
-        
-        character(len=*), intent(in) :: string_in
-        
-        character(len=1), parameter  :: blank = " "
-        integer                      :: nb_word
-         
-        nb_word = COUNT([(string_in(i:i),i=1,len_trim(string_in))].eq.blank)+1
-        
-        return
-      end function count_words
       
-      function pop_word(string_inout) result(word_out)
-        
-        character(len=str_len), intent(inout) :: string_inout
-        character(len=1), parameter           :: blank = " "
-        character(len=str_len)                :: word_out
-        character(len=str_len)                :: chataract
-        
-        integer                         :: nb_word
-        integer                         :: size_string
-        integer                         :: i
-         
-        chataract = trim(adjustl(string_inout))
-        size_string = len_trim(chataract)
-
-        i = 1
-
-        do          
-          if (chataract(i:i).ne.blank) then
-            i = i + 1
-            cycle
-          else
-            if (len_trim(chataract(1:i)).ne.1) then
-              word_out = chataract(1:i-1)
-              if (i.ge.size_string) then
-                string_inout = ""
-              else
-                string_inout = chataract(i:size_string)
-              endif
-              exit
-            else
-              cycle
-            endif
-          endif
-        enddo
-        
-        return
-      end function pop_word
-      
-      function HAS(A,B) result(yes)	!Text B appears somewhere in text A?
-       CHARACTER*(*) A,B
-       INTEGER L
-       logical :: yes
-        L = INDEX(A,B)		!The first position in A where B matches.
-        IF (L.LE.0) THEN
-          yes=.false.
-         ELSE
-          yes=.true.
-        END IF
-      END function HAS
-
-      function ADD(a,b) result(done) ! Add string b into string a if necessary space exists
-
-       CHARACTER(*), intent(inout) :: a
-       CHARACTER(*), intent(in)    :: b
-       INTEGER      ::  L,L_a, L_b
-       character(len=:), allocatable :: c
-       
-       logical :: done
-       
-
-        L = len(a)
-        L_a = len_trim(a)
-        L_b = len_trim(b)
-               
-        if ( (L_a+L_b) .gt. L) then
-           done = .false. ! no space to add string b in a
-        else
-           allocate(character(len=L_a+L_b+1) :: c)
-           write(c,'(A)') trim(a)
-           a = ""
-           write(a,'(A)') ""//trim(c)//sp_char//trim(b)
-           deallocate(c)
-           done = .true.
-        endif
-
-      end function ADD
-
       end program load_vars
