@@ -3,26 +3,29 @@
       use cf_elements_mod, only: xfs_list, XFSL_createRoot, XFSL_addNode, out_var, nb_char_varname
 
       use stack_outvar, only: stack_var, push, pop, empty
-    
+      use characters_strings_more, only: at_char, tb_char, sp_char, error_char, extd_line, str_len &
+          , key_varout, key_unknown, key_coordout, char_true, char_false
+          
+      use process_xml_files, only: read_param_file_to_stack          
       implicit none
 
 
-#define VERBOSE 0
+#define VERBOSE 1
       
-      character(len=1)   :: at_char="@"
-      character(len=1)   :: sp_char=" "
-      character(len=1)   :: tb_char=""//achar(9)
-      character(len=35)  :: f_name ="../inputdata/NewGen_netcdfout.param"
-      character(len=132) :: file_line
+!~       character(len=1)   :: at_char="@"
+!~       character(len=1)   :: sp_char=" "
+!~       character(len=1)   :: tb_char=""//achar(9)
+      character(len=35)  :: f_name ="inputdata/NewGen_netcdfout.param"
+      character(len=extd_line) :: file_line
       character(len=:), allocatable  :: char_field
-      character(len=7)   :: error_char = ".error."
+!~       character(len=7)   :: error_char = ".error."
       
-      integer, parameter :: str_len = 256
+!~       integer, parameter :: str_len = 256
       
       logical :: reussi
 
-! --- dmr ASCII code of character "0"
-      integer, parameter :: zero_char=48
+!~ ! --- dmr ASCII code of character "0"
+!~       integer, parameter :: zero_char=48
       
 ! --- dmr  Variables for handling file openings      
       logical :: file_exists
@@ -30,24 +33,24 @@
       integer :: stat
 
 ! --- dmr        
-      integer :: nb_fields, i, indx_char, len_line, field, sub_indx, size_field
-
+!~       integer :: nb_fields, i, indx_char, len_line, field, sub_indx, size_field
+      integer :: i
 ! --- dmr Minimum number of fields in the "netCDF param" file opened
       integer, parameter :: min_field=5
 
-      character(len=10),parameter:: key_varout="@varoutput"
-      character(len=7),parameter :: key_unknown="Unknown"
-      character(len=12),parameter:: key_coordout="@coordoutput"
-      character(len=3) ,parameter:: char_true=".T.", char_false=".F."
+!~       character(len=10),parameter:: key_varout="@varoutput"
+!~       character(len=7),parameter :: key_unknown="Unknown"
+!~       character(len=12),parameter:: key_coordout="@coordoutput"
+!~       character(len=3) ,parameter:: char_true=".T.", char_false=".F."
       
 !~       integer, parameter :: data_chunk = 10
-      integer                    :: count_var = 0
+!~       integer                    :: count_var = 0
 !~       integer            :: nb_chunk = 1, count_var = 0              
               
       character(len=str_len) :: xml_file_wrk  
       character(len=str_len) :: terugkeer, word_n
       
-      character(len=13)  :: path_XML = "../xml_files/"
+      character(len=13)  :: path_XML = "xml_files/"
       integer :: n_xmlvarfiles = 0
       
       character(len=str_len) :: liste_dependent_var =" "
@@ -59,81 +62,11 @@
       type(out_var)   :: stackelt, new_stackelt
       type(stack_var) :: stackvar
                               
+                              
+      logical :: youpi                              
       ! start main code ...                               
                                                           
-!-----|--1----+----2----+----3----+----4----+----5----+----6----+----7----+----8----+----9----+----0----+----1----+----2----+----3-|
-! dmr   The section below could be moved in a coherent subroutine
-!         IN : a filename
-!         OUT: a stack_var with the variables main information elements
-!-----|--1----+----2----+----3----+----4----+----5----+----6----+----7----+----8----+----9----+----0----+----1----+----2----+----3-|
-                                                          
-      INQUIRE(FILE=f_name, EXIST=file_exists)
-      open(file=f_name, form="formatted", newunit=f_unit)
-
-      do
-        
-        read(f_unit,'(A)',iostat=stat) file_line
-        
-        if (stat /= 0) exit
-        
-        ! process buffer
-        if ( file_line(1:1) /= at_char) cycle
-        
-        count_var = count_var + 1
-        
-        nb_fields = COUNT([(file_line(i:i),i=1,len_trim(file_line))].eq.tb_char)+1
-
-        if ( nb_fields .lt. min_field) then
-           write(*,*) "[FATAL ERROR] number of fields read from "//f_name//" is less than "//char(min_field+zero_char)
-           exit
-        endif
-
-        indx_char=1
-        len_line=len_trim(file_line)
-        
-        do field=1,min_field-1 ! last field is a comment, so skip
-           
-           ! Find where the "tab" character is and read whatever is before
-           sub_indx = index(file_line(indx_char:len_line),tb_char)
-           size_field=sub_indx-1
-           allocate(character(len=size_field) :: char_field)
-           read(file_line(indx_char:indx_char+size_field),*)  char_field
-           
-           ! key to specify an output variable
-           if ((trim(char_field).eq.key_varout).and.(field.eq.1)) then
-               stackelt%var_type = key_varout
-           ! name of the variable               
-           else if ((len_trim(char_field).le.nb_char_varname).and.(field.eq.2)) then
-               stackelt%var_name = trim(char_field)
-           ! type of output requested               
-           else if ((trim(char_field).eq.char_true).or.(trim(char_field).eq.char_false)) then
-              if (trim(char_field).eq.char_true) then
-                if (field.eq.3) then
-                   stackelt%monthly = .true.
-                else
-                   stackelt%yearly = .true.
-                endif
-              else
-                if (field.eq.3) then
-                  stackelt%monthly = .false.
-                else
-                  stackelt%yearly = .false.
-                endif              
-              endif
-           endif  
-           indx_char = indx_char + size_field + 1 
-           deallocate(char_field)
-
-        end do ! finished line parsing
-        
-        call push(stackvar,stackelt) ! add the given variable to the stack
-      end do ! cycle, next buffer line ...
-
-      close(f_unit)
-
-!-----|--1----+----2----+----3----+----4----+----5----+----6----+----7----+----8----+----9----+----0----+----1----+----2----+----3-|
-! dmr   The section before could be moved in a coherent subroutine
-!-----|--1----+----2----+----3----+----4----+----5----+----6----+----7----+----8----+----9----+----0----+----1----+----2----+----3-|
+      youpi = read_param_file_to_stack(f_name, stackvar)
 
      ! Finished reading the input file. Now process the variables on stack
       do 
